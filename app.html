@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TurnFlow™ - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold">TurnFlow™</h1>
+        </div>
+        <div class="flex space-x-1">
+          <button onclick="showTab('projects')" id="tab-projects" class="px-4 py-2 rounded-lg font-medium transition-colors">
+            📋 Projects
+          </button>
+          <button onclick="showTab('new')" id="tab-new" class="px-4 py-2 rounded-lg font-medium transition-colors">
+            ➕ New Project
+          </button>
+          <button onclick="showTab('stats')" id="tab-stats" class="px-4 py-2 rounded-lg font-medium transition-colors">
+            📊 Statistics
+          </button>
+          <button onclick="showTab('contacts')" id="tab-contacts" class="px-4 py-2 rounded-lg font-medium transition-colors">
+            👥 Contacts
+          </button>
+        </div>
+        <a href="index.html" class="text-white hover:text-gray-200">
+          ← Home
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- Projects Tab -->
+    <div id="content-projects" class="tab-content">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">📋 My Projects</h2>
+      <div id="projectsList" class="grid gap-4">
+        <!-- Projects will be loaded here -->
+      </div>
+    </div>
+
+    <!-- New Project Tab -->
+    <div id="content-new" class="tab-content hidden">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">➕ Create New Project</h2>
+      <div class="bg-white rounded-xl shadow-lg p-8">
+        <form id="projectForm" class="space-y-6">
+          <!-- Project Details -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Project Name *</label>
+              <input type="text" id="projectName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., 123 Main St Renovation">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Property Address *</label>
+              <input type="text" id="propertyAddress" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., 123 Main Street">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Unit Number</label>
+              <input type="text" id="unitNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Apt 5B">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name *</label>
+              <input type="text" id="ownerName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., John Smith">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2" for="completionDate">Target Completion Date *</label>
+              <input type="date" id="completionDate" name="completionDate" required title="Target completion date" placeholder="YYYY-MM-DD" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+          </div>
+
+          <hr class="my-6">
+
+          <!-- Tasks Section -->
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Tasks & Cost Estimates</h3>
+            <div id="tasksList" class="space-y-4 mb-4">
+              <!-- Tasks will be added here -->
+            </div>
+            <button type="button" onclick="addTask()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              + Add Task
+            </button>
+          </div>
+
+          <!-- Total -->
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-xl font-semibold text-gray-900">Total Estimate:</span>
+              <span id="totalEstimate" class="text-3xl font-bold text-green-600">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-4">
+            <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors">
+              💾 Save Project
+            </button>
+            <button type="button" onclick="resetForm()" class="px-8 py-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg font-semibold transition-colors">
+              Clear Form
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Statistics Tab -->
+    <div id="content-stats" class="tab-content hidden">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">📊 Statistics</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-semibold mb-4">Task Completion</h3>
+          <canvas id="taskChart"></canvas>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-semibold mb-4">Project Costs</h3>
+          <canvas id="costChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacts Tab -->
+    <div id="content-contacts" class="tab-content hidden">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">👥 Contacts</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Add Contact Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-semibold mb-4">Add New Contact</h3>
+          <form id="contactForm" class="space-y-4">
+            <input type="text" id="contactName" required placeholder="Full Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <input type="email" id="contactEmail" required placeholder="Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <input type="tel" id="contactPhone" required placeholder="Phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <input type="text" id="contactProperty" required placeholder="Property Address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              Add Contact
+            </button>
+          </form>
+        </div>
+
+        <!-- Contacts List -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-semibold mb-4">Saved Contacts</h3>
+          <div id="contactsList" class="space-y-3">
+            <!-- Contacts will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
